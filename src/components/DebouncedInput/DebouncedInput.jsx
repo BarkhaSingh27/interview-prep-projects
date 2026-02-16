@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState , useRef} from 'react';
+import { useCallback, useEffect, useState , useRef} from 'react';
 import useDebounce from './useDebounce';
 
 const API = `https://jsonplaceholder.typicode.com/users`;
@@ -38,13 +38,18 @@ const DebouncedInput = () => {
       return;
     }
     //if not present in cache, filter and store in cache
-    const filtered = users.filter(user => user.name.toLowerCase().includes(key));
+    const filtered = users.filter(user => {
+        const name = user.name.toLowerCase();
+
+        //check if any character of key is present in name
+        return key.split('').every(char => name.includes(char))
+    });
     cacheRef.current[key] = filtered;
     setFilteredUsers(filtered); 
   }, [users]);
 
   //call debounce hook and pass the filter function and delay time
-  const handleChange = useDebounce(filterUsers, 10000);
+  const handleChange = useDebounce(filterUsers, 500);
 
   return (
     <div>
